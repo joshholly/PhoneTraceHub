@@ -1,7 +1,7 @@
 
 # PhoneTraceHub
 
-**PhoneTraceHub** is a tool designed to simulate location sharing by generating links that, when opened on a mobile device, prompt users to grant location access. This tool uses the browser's `navigator.geolocation` API to send users' location data, which is then logged. 
+**PhoneTraceHub** is a social engineering tool designed to get user's to share their location by generating links that, when opened on a mobile device, prompt users to grant location access. This tool uses the browser's `navigator.geolocation` API to send users' location data, which is then logged for viewing. 
 
 
 
