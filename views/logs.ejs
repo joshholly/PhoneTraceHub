@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tracking Logs</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 font-sans">
+        <!-- Navbar -->
+        <nav class="bg-gray-900 p-4 w-full">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <!-- Logo (SVG + Text) -->
+                <div class="flex items-center space-x-2">
+                    <!-- SVG Logo (You can replace this with your custom SVG) -->
+                    <svg class="w-12 h-12 text-white" viewBox="0 0 24 24"
+                        fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 21C15.5 17.4 19 14.1764 19 10.2C19 6.22355 15.866 3 12 3C8.13401 3 5 6.22355 5 10.2C5 14.1764 8.5 17.4 12 21Z"
+                            stroke="#000000" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path
+                            d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z"
+                            stroke="#000000" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <!-- Text Logo -->
+                    <a href="/"
+                        class="text-2xl font-bold text-white">PhoneTraceHub</a>
+                </div>
+                <ul class="flex space-x-6">
+                    <li><a href="#"
+                            class="text-white hover:text-indigo-300">Home</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Container -->
+        <div
+            class="flex justify-center items-center min-h-screen bg-gradient-to-r from-green-400 via-blue-500 to-indigo-600">
+            <div
+                class="w-full max-w-2xl bg-white shadow-xl rounded-lg p-8 text-center space-y-8">
+                <h1
+                    class="text-2xl font-bold text-gray-800 text-center mb-4">Tracking
+                    Logs for Link ID: <%= id %></h1>
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table
+                        class="min-w-full bg-gradient-to-r from-green-400 via-blue-500 to-indigo-600 border border-gray-200 rounded-lg shadow-sm">
+                        <thead class="bg-gray-100 border-b">
+                            <tr>
+                                <th class="text-left py-3 px-4 text-gray-600">IP
+                                    Address</th>
+                                <th
+                                    class="text-left py-3 px-4 text-gray-600">Status</th>
+                                <th
+                                    class="text-left py-3 px-4 text-gray-600">Location</th>
+                                <th
+                                    class="text-left py-3 px-4 text-gray-600">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-table-body">
+                            <!-- Logs will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Wrapper Div -->
+                <div class="flex justify-center mt-8">
+                    <button id="start-tracking"
+                        class="py-3 px-6 bg-indigo-700 text-white text-lg font-semibold rounded-md shadow-md hover:bg-indigo-800">
+                        Start Tracking
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tracking-modal"
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+            <div
+                class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full relative">
+                <button id="close-modal"
+                    class="absolute top-2 right-2 text-gray-600 hover:text-gray-900">&times;</button>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Enter Phone
+                    Number</h2>
+                <input id="phone-number" type="text" placeholder="Phone number"
+                    class="w-full p-2 border border-gray-300 rounded mb-4">
+                <button onclick="sendTrackingSMS()"
+                    class="w-full bg-blue-600 text-white p-2 rounded">Send
+                    Tracking Message</button>
+                <p class="mt-4 text-center">OR</p>
+                <p class="text-center">Send this link: <span id="tracking-link"
+                        class="text-blue-600 cursor-pointer"
+                        onclick="copyLink()">Generating...</span></p>
+            </div>
+        </div>
+
+        <script>
+        function fetchLogs() {
+            const id = '<%= id %>';
+            fetch(`/jsonlogs/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    const logTableBody = document.getElementById('log-table-body');
+                    logTableBody.innerHTML = '';  // Clear existing logs
+
+                    data.forEach(log => {
+                        const logRow = document.createElement('tr');
+                        logRow.classList.add('border-b', 'bg-white', 'hover:bg-gray-50');
+                        
+                        logRow.innerHTML = `
+                            <td class="py-3 bg-white px-4">${log.ip}</td>
+                            <td class="py-3 bg-white px-4">
+                                ${log.status === 'clicked' ? '<span class="text-yellow-600 font-medium">Clicked</span>' : 
+                                 (log.status === 'Location Shared' ? '<span class="text-green-600 font-medium">Location Shared</span>' : `<span class="text-gray-500">${log.status}</span>`)}
+                            </td>
+                            <td class="py-3 bg-white px-4">
+                                ${log.latitude && log.longitude ? 
+                                    `<a href="https://www.google.com/maps?q=${log.latitude},${log.longitude}" target="_blank" class="text-blue-600 hover:underline">View on Google Maps</a>` :
+                                    `<a href="https://iplocation.io/ip/${log.ip}" target="_blank" class="text-blue-600 hover:underline">View Location by IP (not as accurate)</a>`}
+                            </td>
+                            <td class="py-3 bg-white px-4 text-gray-500">${new Date(log.timestamp).toLocaleString()}</td>
+                        `;
+                        logTableBody.appendChild(logRow);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching logs:', error);
+                });
+        }
+
+        // Fetch logs every 10 seconds
+        setInterval(fetchLogs, 10000);  // 10000ms = 10 seconds
+
+        // Fetch logs initially when the page loads
+        window.onload = fetchLogs;
+
+        function openModal() {
+            document.getElementById("tracking-link").textContent = `<%= siteURL %>/t/<%= id %>`;
+           
+            document.getElementById("tracking-modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("tracking-modal").classList.add("hidden");
+        }
+
+        document.getElementById("close-modal").addEventListener("click", closeModal);
+        document.getElementById("start-tracking").addEventListener("click", openModal);
+
+        function sendTrackingSMS() {
+            const phoneNumber = document.getElementById("phone-number").value;
+            const linkText = `<%= decoyURL %> /t/<%= id %>`;
+            const bodyText = `Hey! I thought you might find this interesting. You can see who's viewed your profile! Chech this out: ${encodeURIComponent(linkText)}`;
+            window.location.href = `sms:${phoneNumber}?body=${bodyText}`;
+            closeModal();
+        }
+
+        function copyLink() {
+            const linkText = document.getElementById("tracking-link").textContent;
+            navigator.clipboard.writeText(linkText);
+            alert("Link Copied to Clipboard");
+        }
+         </script>
+          <% if (isUS) { %>
+            <script>
+               
+                  window.addEventListener('load', () => {
+                    const phoneInput = document.querySelector('#phone-number');
+                    phoneInput.addEventListener('keydown', disallowNonNumericInput);
+                    phoneInput.addEventListener('keyup', formatToPhone);
+                  });
+              
+                  const disallowNonNumericInput = (evt) => {
+                    if (evt.ctrlKey) { return; }
+                    if (evt.key.length > 1) { return; }
+                    if (/[0-9.]/.test(evt.key)) { return; }
+                    evt.preventDefault();
+                  };
+              
+                  const formatToPhone = (evt) => {
+                    const digits = evt.target.value.replace(/\D/g, '').substring(0, 10);
+                    const areaCode = digits.substring(0, 3);
+                    const prefix = digits.substring(3, 6);
+                    const suffix = digits.substring(6, 10);
+              
+                    if (digits.length > 6) {
+                      evt.target.value = `(${areaCode}) ${prefix} - ${suffix}`;
+                    } else if (digits.length > 3) {
+                      evt.target.value = `(${areaCode}) ${prefix}`;
+                    } else if (digits.length > 0) {
+                      evt.target.value = `(${areaCode}`;
+                    }
+                  };
+              </script>
+                  <% } %>
+    </body>
+</html>
